@@ -1,0 +1,18 @@
+{
+  "name": "catan_ig",
+  "version": "1.0.0",
+  "description": "catan instant game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"no test specified\" && exit 1"
+  },
+  "keywords": [
+    "catan",
+    "instant",
+    "game",
+    "facebook",
+    "messenger"
+  ],
+  "author": "peppers",
+  "license": "ISC"
+}
