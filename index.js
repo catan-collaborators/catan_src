@@ -1,18 +1,18 @@
-exports.validate_state_update_local = function (original, update) {
-    console.log("Validating state update") 
+exports.validate_state_updates_local = function (original, updates) {
+    console.log("Validating state updates") 
 
     // TODO
     return true
 }
 
-exports.attempt_state_update = function(original, update) {
-    console.log("Attempting state update")
+exports.attempt_state_updates = function(original, updates) {
+    console.log("Attempting state updates")
 
     // TODO
     return true
 }
 
-exports.process_updates = function (updates) {
+exports.process_updates = function (original, updates) {
     console.log("Processing updates") 
 
     // TODO
