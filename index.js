@@ -1,3 +1,7 @@
+catan = require('./src/validate_state_updates_local.js')
+catan = require('./src/attempt_state_updates.js')
+catan = require('./src/process_updates.js')
+
 exports.validate_state_updates_local = function (original, updates) {
     console.log("Validating state updates") 
 

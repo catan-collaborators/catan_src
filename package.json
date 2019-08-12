@@ -14,5 +14,8 @@
     "messenger"
   ],
   "author": "peppers",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "underscore": "^1.9.1"
+  }
 }
