@@ -70,34 +70,34 @@ function assert_state_updates_local(state_update_name, result, expected, initial
         const json_indent = 4
         let error = TestError()
         error.message = `Failed to assert '${state_update_name}'`
-        error += `${"\n"}Expected '${expected}' but got '${result}'`
+        error.message += `${"\n"}Expected '${expected}' but got '${result}'`
 
         if (initial == null || typeof initial !== 'object')
         {
-            error += `Initial: ${initial}`
+            error.message += `Initial: ${initial}`
         }
         else
         {
-            error += `Initial: ${JSON.stringify(initial, null, json_indent)}`
+            error.message += `Initial: ${JSON.stringify(initial, null, json_indent)}`
         }
 
         if (updates == null || !Array.isArray(updates))
         {
-            error += `Updates: ${updates}`
+            error.message += `Updates: ${updates}`
         }
         else
         {
-            error += `Updates:`
+            error.message += `Updates:`
             updates
                 .forEach((value, index) =>
                 {
                     if (value == null || typeof value !== 'object')
                     {
-                        error += `Update ${index+1}: ${value}`
+                        error.message += `Update ${index+1}: ${value}`
                     }
                     else
                     {
-                        error += `Update ${index+1}: ${JSON.stringify(value, null, json_indent)}`
+                        error.message += `Update ${index+1}: ${JSON.stringify(value, null, json_indent)}`
                     }
                 })
         }
@@ -115,7 +115,11 @@ if (validate_test_utilities)
         "Bad 'state_update_name' variable: null")
     expect_error(
         () => assert_state_updates_local(5, null, null, null, null),
-        "Validated null 'result' variable for assert_state_updates_local must be string",
+        "Validated non-string (int) 'state_update_name' variable for assert_state_updates_local throws error",
+        "Bad 'state_update_name' variable: 5")
+    expect_error(
+        () => assert_state_updates_local(5, null, null, null, null),
+        "Validated null 'result' variable for assert_state_updates_local because must be string",
         "Bad 'state_update_name' variable: 5")
     expect_error(() => assert_state_updates_local(5, null, null, null, null))
     console.log("")
