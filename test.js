@@ -9,9 +9,15 @@ class TestError extends Error
         super(...args)
         Error.captureStackTrace(this, this.constructor)
     }
+
+    toString()
+    {
+        // print message red
+        return `\x1b[31m${super.toString()}\x1b[0m`
+    }
 }
 
-function expect_error(f, success = null, match = null, assertion = null)
+function expect_error(f, success = null, match = null, assertion = undefined)
 {
     let result
 
@@ -21,25 +27,34 @@ function expect_error(f, success = null, match = null, assertion = null)
     }
     catch (error)
     {
-        if (match == null || error.message == match)
+        if (match == null)
         {
-            if (success != null)
-            {
-                console.log(success)
-            }
-
             return true
         }
 
-        let message = `Failed to throw expected error`
-        message += `${"\n"}Exception was ${error.toString()}`
-        throw new TestError(message)
+        if (error.message != match)
+        {
+            let message = `Failed to throw expected error`
+            message += `${"\n"}Exception was ${error.toString()}`
+            message += `${"\n"}Assertion was ${assertion}`
+            throw new TestError(message)
+        }
+
+        success += `: ${match}`
+
+        if (success != null)
+        {
+            // print message green
+            console.log(`\x1b[32m${success}\x1b[0m`)
+        }
+
+        return true
     }
 
     let message = `Failed to throw any error`
     message += `${"\n"}Result was ${result}`
 
-    if (expected == null)
+    if (assertion == null)
     {
         throw new TestError(message)
     }
@@ -74,30 +89,30 @@ function assert_state_updates_local(state_update_name, result, expected, initial
 
         if (initial == null || typeof initial !== 'object')
         {
-            error.message += `Initial: ${initial}`
+            error.message += `${"\n"}Initial: ${initial}`
         }
         else
         {
-            error.message += `Initial: ${JSON.stringify(initial, null, json_indent)}`
+            error.message += `${"\n"}Initial: ${JSON.stringify(initial, null, json_indent)}`
         }
 
         if (updates == null || !Array.isArray(updates))
         {
-            error.message += `Updates: ${updates}`
+            error.message += `${"\n"}Updates: ${updates}`
         }
         else
         {
-            error.message += `Updates:`
+            error.message += `${"\n"}Updates:`
             updates
                 .forEach((value, index) =>
                 {
                     if (value == null || typeof value !== 'object')
                     {
-                        error.message += `Update ${index+1}: ${value}`
+                        error.message += `${"\n"}Update ${index+1}: ${value}`
                     }
                     else
                     {
-                        error.message += `Update ${index+1}: ${JSON.stringify(value, null, json_indent)}`
+                        error.message += `${"\n"}Update ${index+1}: ${JSON.stringify(value, null, json_indent)}`
                     }
                 })
         }
@@ -109,14 +124,26 @@ function assert_state_updates_local(state_update_name, result, expected, initial
 if (validate_test_utilities)
 {
     console.log("Validating test utilities")
+
+    let undefined_var
+    let null_var = null
+    let nan_var = Number.NaN
+
     expect_error(
-        () => assert_state_updates_local(null, null, null, null, null),
-        "Validated null 'state_update_name' variable for assert_state_updates_local throws error",
-        "Bad 'state_update_name' variable: null")
+        () => assert_state_updates_local(undefined_var, null, null, null, null),
+        `Validated '${undefined_var}' value for 'state_update_name' variable for function 'assert_state_updates_local' throws error`,
+        "Bad 'state_update_name' variable: undefined",
+        "Assert state_update_name is undefined")
+    expect_error(
+        () => assert_state_updates_local(null_var, null, null, null, null),
+        `Validated '${null_var}' value for 'state_update_name' variable for function 'assert_state_updates_local' throws error`,
+        "Bad 'state_update_name' variable: null",
+        "Assert state_update_name is null")
     expect_error(
         () => assert_state_updates_local(5, null, null, null, null),
-        "Validated non-string (int) 'state_update_name' variable for assert_state_updates_local throws error",
-        "Bad 'state_update_name' variable: 5")
+        `Validated non-string () 'state_update_name' variable for assert_state_updates_local throws error`,
+        "Bad 'state_update_name' variable: 5",
+        "Assert state_update_name is undefined")
     expect_error(
         () => assert_state_updates_local(5, null, null, null, null),
         "Validated null 'result' variable for assert_state_updates_local because must be string",
