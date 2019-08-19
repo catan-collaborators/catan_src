@@ -1,6 +1,7 @@
 const catan_ig = require('./index')
 
 const validate_test_utilities = true
+const json_indent = 4
 
 function expect_error(f, success = null, match = null, assertion = undefined)
 {
@@ -24,7 +25,7 @@ function expect_error(f, success = null, match = null, assertion = undefined)
 
             if (assertion != null)
             {
-                message += `${"\n"}Assertion was ${assertion.toString()}`
+                message += `${"\n"}Assertion was ${assertion}`
             }
 
             message += `\x1b[0m`
@@ -48,7 +49,7 @@ function expect_error(f, success = null, match = null, assertion = undefined)
 
     if (assertion != null)
     {
-        message += `${"\n"}Failed to throw on ${assertion.toString()}`
+        message += `${"\n"}Failed to throw on ${assertion}`
     }
 
     message += `\x1b[0m`
@@ -64,23 +65,22 @@ function assert_state_updates_local(state_update_name, result, expected, initial
 
     if (typeof result !== "boolean")
     {
-        throw new Error(`Bad 'result' variable: ${validated}`)
+        throw new Error(`Bad 'result' variable: ${validated == null ? validated : validated.toString()}`)
     }
 
     if (typeof expected !== "boolean")
     {
-        throw new Error(`Bad 'expected' variable: ${expected}`)
+        throw new Error(`Bad 'expected' variable: ${expected == null ? expected : expected.toString()}`)
     }
 
     if (result != expected)
     {
-        const json_indent = 4
         let message = `Failed to assert '${state_update_name}'`
         message += `${"\n"}Expected '${expected}' but got '${result}'`
 
         if (initial == null || typeof initial !== 'object')
         {
-            message += `${"\n"}Initial: ${initial}`
+            message += `${"\n"}Initial: ${initial == null ? initial : initial.toString()}`
         }
         else
         {
@@ -89,7 +89,7 @@ function assert_state_updates_local(state_update_name, result, expected, initial
 
         if (updates == null || !Array.isArray(updates))
         {
-            message += `${"\n"}Updates: ${updates}`
+            message += `${"\n"}Updates: ${updates == null ? updates : updates.toString()}`
         }
         else
         {
