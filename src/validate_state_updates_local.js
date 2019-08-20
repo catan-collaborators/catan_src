@@ -1,9 +1,16 @@
+module.exports =
+{
+    'validate_state_updates_local': validate_state_updates_local
+}
+
 function validate_state_updates_local(existing, update)
 {
     if (!validate_tiles(existing, update))
     {
         return false
     }
+
+    return true
 }
 
 function validate_tiles(existing, update)

@@ -29,7 +29,7 @@ function expect_no_error(func, expected, success = null, assertion = null)
         throw error
     }
 
-    if (match != result)
+    if (expected != result)
     {
         let message = `\x1b[31mResult did not match expected value`
         message += `${"\n"}Function call was ${func.toString()}`
@@ -166,6 +166,7 @@ function assert_state_updates_local(state_update_name, action, expected, initial
     }
 
     counter.val++
+    return result
 }
 
 if (validate_test_utilities)
@@ -304,6 +305,12 @@ if (validate_test_utilities)
         `Validated non-boolean (${typeof func_var}) value '${func_var}' for 'expected' variable for function 'assert_state_updates_local' throws error`,
         "Bad 'expected' variable: () => {;}",
         "Assert 'expected' variable in function 'assert_state_updates_local' is not symbol")
+
+    expect_no_error(
+        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, undefined_var, undefined_var),
+        false,
+        `Validated 'initial=${undefined_var}', 'updates=${undefined_var}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
+        "Assert 'initial=undefined', 'updates=undefined' return false")
 
     console.log(`${counter.val} ${counter.val == 1 ? 'test' : 'tests'} asserted`)
     console.log("")
