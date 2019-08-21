@@ -3,6 +3,15 @@ module.exports =
     'validate_state_updates_local': validate_state_updates_local
 }
 
+const keys =
+{
+    'tiles_key': 'tiles',
+    'vertices_key': 'vertices',
+    'edges_key': 'edges',
+    'occupied_key': 'occupied',
+    'resources_key': 'resources'
+}
+
 function validate_state_updates_local(existing, update)
 {
     if (!validate_tiles(existing, update))
@@ -25,7 +34,7 @@ function validate_tiles(existing, update)
         return false
     }
 
-    const tiles_key = 'tiles'
+    const tiles_key = keys.tiles_key
 
     if (!(tiles_key in existing))
     {
@@ -79,7 +88,7 @@ function validate_tiles(existing, update)
                 return false
             }
 
-            const vertices_key = 'vertices'
+            const vertices_key = keys.vertices_key
 
             if (!(vertices_key in existing_tile))
             {
@@ -115,7 +124,7 @@ function validate_tiles(existing, update)
                 return false
             }
 
-            const edges_key = 'edges'
+            const edges_key = keys.edges_key
 
             if (!(edges_key in existing_tile))
             {
@@ -151,7 +160,7 @@ function validate_tiles(existing, update)
                 return false
             }
 
-            const occupied_key = 'occupied'
+            const occupied_key = keys.occupied_key
 
             if (existing_tiles_vertices.some(existing_tile => !(occupied_key in existing_tile) || existing_tile[occupied_key] == null || typeof existing_tile[occupied_key] !== "boolean"))
             {
@@ -189,37 +198,37 @@ function validate_tiles(existing, update)
                 return false
             }
             
-            const resource_key = 'resource'
+            const resources_key = keys.resources_key
 
-            if (!(resource_key in update_tile))
+            if (!(resources_key in update_tile))
             {
                 return false
             }
 
-            if (!(resource_key in existing_tile))
+            if (!(resources_key in existing_tile))
             {
                 return false
             }
 
-            const update_tile_resource = update_tile[resource_key]
-            const existing_tile_resource = existing_tile[resource_key]
+            const update_tile_resource = update_tile[resources_key]
+            const existing_tile_resource = existing_tile[resources_key]
 
-            if (update_tile[resource_key] == null)
+            if (update_tile[resources_key] == null)
             {
                 return false
             }
 
-            if (existing_tile[resource_key] == null)
+            if (existing_tile[resources_key] == null)
             {
                 return false
             }
             
-            if (typeof update_tile[resource_key] !== "string")
+            if (typeof update_tile[resources_key] !== "string")
             {
                 return false
             }
 
-            if (typeof existing_tile[resource_key] !== "string")
+            if (typeof existing_tile[resources_key] !== "string")
             {
                 return false
             }

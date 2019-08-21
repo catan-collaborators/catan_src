@@ -306,18 +306,45 @@ if (validate_test_utilities)
         "Bad 'expected' variable: () => {;}",
         "Assert 'expected' variable in function 'assert_state_updates_local' is not symbol")
 
-    expect_no_error(
-        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, undefined_var, undefined_var),
-        false,
-        `Validated 'initial=${undefined_var}', 'updates=${undefined_var}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
-        "Assert 'initial=undefined', 'updates=undefined' return false")
-
     console.log(`${counter.val} ${counter.val == 1 ? 'test' : 'tests'} asserted`)
     console.log("")
 }
 
+
 console.log("Validating local state updates")
-catan_ig.validate_state_updates_local({}, [])
+{
+    let initial
+    let updates
+
+    expect_no_error(
+        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        false,
+        `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
+        "Assert 'initial=undefined', 'updates=undefined' return false")
+
+    updates = null
+    expect_no_error(
+        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        false,
+        `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
+        "Assert 'initial=undefined', 'updates=null' return false")
+
+    initial = null
+    updates = undefined
+    expect_no_error(
+        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        false,
+        `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
+        "Assert 'initial=null', 'updates=undefined' return false")
+
+    updates = null
+    expect_no_error(
+        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        false,
+        `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
+        "Assert 'initial=null', 'updates=null' return false")
+}
+
 console.log("")
 
 console.log("Validating state update attempts")
