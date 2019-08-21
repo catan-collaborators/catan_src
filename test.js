@@ -5,7 +5,95 @@ const json_indent = 4
 
 const counter = { 'val': 0 }
 
-function expect_no_error(func, expected, success = null, assertion = null)
+const keys =
+{
+    'value_key': 'value',
+    'detail_key': 'detail'
+}
+
+function truthify_and_assert(func, expected)
+{
+    let result
+
+    try
+    {
+        result = func()
+    }
+    catch (error)
+    {
+        let message = `\x1b[31mUnexpectedly threw error`
+        message += `${"\n"}Function call was ${func.toString()}`
+        message += `${"\n"}Exception was: ${error.message}`
+        message += `\x1b[0m`
+        error.message = message
+        throw error
+    }
+
+    if (typeof result === "boolean")
+    {
+        if (result != expected)
+        {
+            let message = `\x1b[31mResult did not match expected value`
+            message += `${"\n"}Function call was ${func.toString()}`
+            message += `${"\n"}Expected value was ${expected}`
+            message += `${"\n"}Returned value was ${result == null ? result : result.toString()}`
+            message += `\x1b[0m`
+            throw new Error(message)
+        }
+
+        return result
+    }
+
+    if (result == null || typeof result !== "object")
+    {
+        let message = `\x1b[31mFunction call returned incorrect type`
+        message += `${"\n"}Function call was ${func.toString()}`
+        message += `${"\n"}Returned value was ${result == null ? result : result.toString()}`
+        message += `\x1b[0m`
+        throw new Error(message)
+    }
+
+    const value_key = keys.value_key
+    const detail_key = keys.detail_key
+    
+    if (!(value_key in result))
+    {
+        let message = `\x1b[31mFunction call returned non-truthy object`
+        message += `${"\n"}Function call was ${func.toString()}`
+        message += `${"\n"}Exception was: ${error.message}`
+        message += `${"\n"}Returned value was ${result == null ? result : result.toString()}`
+
+        if (detail_key in result)
+        {
+            message += `${"\n"}Detail: ${result[detail_key] == null ? result[detail_key] : result[detail_key].toString()}`
+        }
+
+        message += `\x1b[0m`
+        error.message = message
+        throw error
+    }
+
+    if (result[value_key] != expected)
+    {
+        let message = `\x1b[31mResult did not match expected value`
+        message += `${"\n"}Function call was ${func.toString()}`
+        message += `${"\n"}Expected value was ${expected}`
+        message += `${"\n"}Returned value was ${result}`
+
+        if (detail_key in result)
+        {
+            message += `${"\n"}Detail: ${result[detail_key] == null ? result[detail_key] : result[detail_key].toString()}`
+        }
+
+        message += `\x1b[0m`
+        error.message = message
+        throw new Error(message)
+    }
+    
+    return result[value_key]
+}
+
+function expect_no_error(func, expected, success = undefined, assertion = undefined)
 {
     let result
 
@@ -42,7 +130,6 @@ function expect_no_error(func, expected, success = null, assertion = null)
         }
 
         message += `\x1b[0m`
-        error.message = message
         throw new Error(message)
     }
 
@@ -55,7 +142,7 @@ function expect_no_error(func, expected, success = null, assertion = null)
     return true
 }
 
-function expect_error(func, success = null, match = null, assertion = undefined)
+function expect_error(func, success = undefined, match = undefined, assertion = undefined)
 {
     let result
 
@@ -125,7 +212,7 @@ function assert_state_updates_local(state_update_name, action, expected, initial
         throw new Error(`Bad 'expected' variable: ${expected == null ? expected : expected.toString()}`)
     }
 
-    let result = action(initial, updates)
+    const result = action(initial, updates)
 
     if (result != expected)
     {
@@ -174,14 +261,14 @@ if (validate_test_utilities)
     console.log("Validating test utilities")
 
     let undefined_var
-    let null_var = null
-    let nan_var = Number.NaN
-    let num_var = 5
-    let bool_var = false
-    let str_var = "hello world"
-    let obj_var = {}
-    let sym_var = Symbol()
-    let func_var = () => {;}
+    const null_var = null
+    const nan_var = Number.NaN
+    const num_var = 5
+    const bool_var = false
+    const str_var = "hello world"
+    const obj_var = {}
+    const sym_var = Symbol()
+    const func_var = () => {;}
 
     expect_error(
         () => assert_state_updates_local(undefined_var, null, null, null, null),
@@ -317,32 +404,40 @@ console.log("Validating local state updates")
     let updates
 
     expect_no_error(
-        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        () => assert_state_updates_local("Type validation 1", catan_ig.validate_state_updates_local, false, initial, updates),
         false,
         `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
-        "Assert 'initial=undefined', 'updates=undefined' return false")
+        "Assert 'initial=undefined', 'updates=undefined' returns false")
 
     updates = null
     expect_no_error(
-        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        () => assert_state_updates_local("Type validation 2", catan_ig.validate_state_updates_local, false, initial, updates),
         false,
         `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
-        "Assert 'initial=undefined', 'updates=null' return false")
+        "Assert 'initial=undefined', 'updates=null' returns false")
 
     initial = null
     updates = undefined
     expect_no_error(
-        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        () => assert_state_updates_local("Type validation 3", catan_ig.validate_state_updates_local, false, initial, updates),
         false,
         `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
-        "Assert 'initial=null', 'updates=undefined' return false")
+        "Assert 'initial=null', 'updates=undefined' returns false")
 
     updates = null
     expect_no_error(
-        () => assert_state_updates_local("Test case 1", catan_ig.validate_state_updates_local, false, initial, updates),
+        () => assert_state_updates_local("Type validation 4", catan_ig.validate_state_updates_local, false, initial, updates),
         false,
         `Validated 'initial=${initial}', 'updates=${updates}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
-        "Assert 'initial=null', 'updates=null' return false")
+        "Assert 'initial=null', 'updates=null' returns false")
+
+    // TODO: more room for type validations
+
+    expect_no_error(
+        () => truthify_and_assert(() => assert_state_updates_local("Empty inputs", catan_ig.validate_state_updates_local, false, {}, [], false), false),
+        false,
+        `Validated 'initial=${JSON.stringify({})}', 'updates=${JSON.stringify([])}' for function 'catan_ig.validate_state_updates_local' returns 'false'`,
+        "Assert 'initial={}', 'updates=[]' returns false")
 }
 
 console.log("")
